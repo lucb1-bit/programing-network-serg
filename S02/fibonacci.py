@@ -10,6 +10,3 @@ for i in range (0,11):
         fibo_list.append(fibo_list[n1] + fibo_list[n2] )
 print (fibo_list)
 
-
-
-
