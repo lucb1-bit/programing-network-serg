@@ -1,4 +1,4 @@
-from pathlib import Path
+cfrom pathlib import Path
 file_seq3 = "../SEQUENCES/ADA.txt"
 file_contents3 = Path(file_seq3).read_text()
 
