@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from sympy import sequence
-
 file_seq4 = "../SEQUENCES/ADA_EXONS.txt"
 file_contents4 = Path(file_seq4).read_text()
 
