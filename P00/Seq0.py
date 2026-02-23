@@ -10,7 +10,6 @@ def seq_read_fasta(file):
     sequence = ""
     for line in seq_lines:
         sequence += line.strip()
-
     return sequence
 
 def seq_len(seq):
@@ -23,7 +22,6 @@ def seq_count_base(seq, base):
     for l in seq:
         if l == base:
             count += 1
-
     return count
 
 
@@ -66,4 +64,3 @@ def most_freq(seq):
             most_dict[f] = most
     return most_dict
 
-    return most, l
