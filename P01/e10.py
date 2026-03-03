@@ -1,6 +1,6 @@
 from Seq1 import Seq
 FOLDER = "sequences/"
-genes = ["U5", "ADA", "FRAT1", "FXN"]
+genes = ["U5", "ADA", "FRAT1", "FXN","txt"]
 
 for gene in genes:
     filename = FOLDER + gene + ".txt"
