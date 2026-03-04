@@ -17,7 +17,6 @@ while True:
   # -- Send the user message
   s.send(str.encode(msg))
 
-
   # -- Close the socket
   s.close()
 
