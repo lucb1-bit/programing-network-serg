@@ -2,7 +2,7 @@ import socket
 
 # Configure the Server's IP and PORT
 PORT = 8081
-IP = "212.128.254.241" # it depends on the machine the server is running
+IP = "212.128.254.255" # it depends on the machine the server is running
 MAX_OPEN_REQUESTS = 5
 
 # Counting the number of connections
@@ -37,7 +37,7 @@ try:
         # We must write bytes, not a string
         clientsocket.send(send_bytes)
         clientsocket.close()
--
+
 except socket.error:
     print("Problems using ip {} port {}. Is the IP correct? Do you have port permission?".format(IP, PORT))
 
