@@ -23,5 +23,5 @@ for f in list_sequence:
     msg2 = "Fragment " + str(n) + ":" + str(f)
     if n<6:
         print(msg2)
-        response = c.talk(msg2)
+        c.talk(msg2)
     n += 1
