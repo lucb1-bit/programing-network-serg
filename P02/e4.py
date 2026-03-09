@@ -7,10 +7,13 @@ c = Client(IP, PORT)
 
 genes = ["U5", "FRAT1", "ADA"]
 
+print(f"Connection to SERVER at {IP}, PORT: {PORT}")
+
 for gene in genes:
     print(f"Sending the {gene} Gene to the server...")
     s1 = Seq()
     s1.seq_read_fasta(gene)
-    str_s1=str(s1)
-    response = c.talk(str_s1)
-    print(f"Response: {response}")
+    print(f"To Server: {str(s1)}")
+
+    response = c.talk(str(s1))
+    print(f"From Server:\n{response}")
