@@ -104,3 +104,16 @@ class Seq:
             elif freq[f] == most:
                 most_dict[f] = most
         return "Most frequent base: ", most_dict
+
+    def list_seq(self):
+        i = 0
+        frag =""
+        list_seq = []
+        for l in self.bases:
+            i += 1
+            frag += l
+            if i == 10:
+                list_seq.append(frag)
+                frag = ""
+                i = 0
+        return list_seq
