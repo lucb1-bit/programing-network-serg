@@ -1,6 +1,6 @@
 from Client0 import Client
 
-IP = "212.128.254.53"
+IP = "212.128.254.243"
 PORT = 8081
 
 c = Client(IP, PORT)
