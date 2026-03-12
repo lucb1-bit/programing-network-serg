@@ -8,7 +8,7 @@ ls.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 # Configure the Server's IP and PORT
 PORT = 8080
-IP = "212.128.255.81"
+IP = "212.128.254.60"
 
 # -- Step 1: create the socket
 ls = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
