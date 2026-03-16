@@ -44,7 +44,7 @@ while True:
         total = seq.len()
         n_bases = seq.count()
         percentage = seq.percentage(n_bases)
-        response = f"""Sequence: {seq} \n Total length: {total} \n{percentage}"""
+        response = f"""Sequence: {seq} \nTotal length: {total} \n{percentage}"""
         print(response)
 
 
@@ -64,7 +64,7 @@ while True:
         gene = parts[1]
 
         if gene in gene_valid:
-            filename = f"{gene}.txt"
+            filename = f"SEQUENCES/{gene}.txt"
             response = seq.seq_read_fasta(filename)
             print(response)
         else:
