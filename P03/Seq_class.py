@@ -69,7 +69,6 @@ class Seq:
 
 
 
-
     def reverse(self):
         reverse = ""
         if self.bases == "NULL" or self.bases == "Invalid Sequence":
