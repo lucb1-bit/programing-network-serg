@@ -4,6 +4,7 @@ import termcolor
 IP = "127.0.0.1"
 PORT = 8080
 
+
 def process_client(s):
     req_raw = s.recv(2000)
     req = req_raw.decode()
@@ -16,8 +17,11 @@ def process_client(s):
     termcolor.cprint(req_line, "green")
 
     r = req_line.split(" ")
-    if "/info/A" in r:
-        with open("html/info/A.html", "r") as f:
+    base_list = ["/info/A", "/info/C"]
+
+    if r[1] in base_list:
+        name = "html" + r[1] + ".html"
+        with open(name, "r") as f:
             body = f.read()
     else:
         body = """

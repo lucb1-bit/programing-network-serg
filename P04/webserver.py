@@ -4,6 +4,7 @@ import termcolor
 IP = "127.0.0.1"
 PORT = 8080
 
+
 def process_client(s):
     req_raw = s.recv(2000)
     req = req_raw.decode()
@@ -15,21 +16,19 @@ def process_client(s):
     print("Request line: ", end="")
     termcolor.cprint(req_line, "green")
 
+
     r = req_line.split(" ")
-    if "/info/A" in r:
-        with open("html/info/A.html", "r") as f:
+    base_list = ["/info/A","/info/C","/info/G","/info/T"]
+    if r[1] in base_list :
+        name= "html"+r[1]+".html"
+        with open(name, "r") as f:
+            body = f.read()
+    elif r[1] == "/":
+        with open("html/info/index.html", "r") as f:
             body = f.read()
     else:
-        body = """
-           <!DOCTYPE html>
-           <html lang="en" dir="ltr">
-           <head>
-               <meta charset="utf-8">
-           </head>
-           <body style="background-color: white;">
-           </body>
-           </html>
-           """
+        with open("html/info/error.html", "r") as f:
+            body = f.read()
 
     status_line = "HTTP/1.1 200 OK\n"
 
@@ -39,7 +38,6 @@ def process_client(s):
 
     response_msg = status_line + header + "\n" + body
     cs.send(response_msg.encode())
-
 
 ls = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
