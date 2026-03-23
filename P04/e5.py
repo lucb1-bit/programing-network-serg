@@ -24,7 +24,7 @@ def process_client(s):
         with open(name, "r") as f:
             body = f.read()
     else:
-        with open("html/info/error.html", "r") as f:
+        with open("html/error.html", "r") as f:
             body = f.read()
 
     status_line = "HTTP/1.1 200 OK\n"
