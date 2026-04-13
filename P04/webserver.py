@@ -30,10 +30,9 @@ def process_client(s):
         with open("html/error.html", "r") as f:
             body = f.read()
 
+    # RESPUESTA HTTP
     status_line = "HTTP/1.1 200 OK\n"
-
     header = "Content-Type: text/html\n"
-
     header += f"Content-Length: {len(body)}\n"
 
     response_msg = status_line + header + "\n" + body

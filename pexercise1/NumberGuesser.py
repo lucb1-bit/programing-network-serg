@@ -1,0 +1,25 @@
+class numberGuesser:
+    def __init__(self, secret_number , attemps):
+        self.secret_number = secret_number
+        self.attemps = attemps
+
+        def __str__(self):
+            return f"Connection to SERVER at {self.IP}, PORT: {self.PORT}"
+
+        def ping(self):
+            print("ok")
+
+        def talk(self, msg):
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+            s.connect((self.IP, self.PORT))
+
+            s.send(str.encode(msg))
+
+            response = s.recv(2048).decode("utf-8")
+
+            s.close()
+
+            return response
+
+

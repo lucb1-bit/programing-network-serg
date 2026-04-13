@@ -5,10 +5,14 @@ from Seq_class import Seq
 PORT = 8080
 IP = "127.0.0.1"
 
+#crear un socket
 ls = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 ls.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
+#establecer el socket con la IP y el puerto que quieres
 ls.bind((IP, PORT))
+
+#poner a escuchar al socket
 ls.listen()
 
 print("Seq Server running")

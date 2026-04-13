@@ -1,8 +1,8 @@
 import socket
 
 # Configure the Server's IP and PORT
-PORT = 8080
-IP = "212.128.254.243" # it depends on the machine the server is running
+PORT = 8081
+IP = "127.0.0.1" # it depends on the machine the server is running
 MAX_OPEN_REQUESTS = 5
 
 # Counting the number of connections
@@ -30,6 +30,7 @@ try:
         # Read the message from the client, if any
         msg = clientsocket.recv(2048).decode("utf-8")
         print("Message from client: {}".format(msg))
+
 
         # Send the message
         message = "Hello from the teacher's server\n"
