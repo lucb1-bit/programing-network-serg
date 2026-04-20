@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title>Title</title>
+</head>
+<body>
+   <h1>SEQ2 server</h1>
+
+  <form action="ping" method="get">
+    </p>Acces to the server</p>
+  <hr> Is the server alive ? <input type="submit" value="PING">
+    <br>
+  </form>
+
+  <form action="get" method="get">
+    <hr> Get a sequence. Select a sequence number
+    <select name="n">
+      <option value="0">0</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+    </select>
+    <input type="submit" value="GET">
+  </form>
+
+  <form action="gene" method="get">
+    <hr> Get a sequence. Select a sequence number
+    <select name="gene">
+      <option value="U5">U5</option>
+      <option value="ADA">ADA</option>
+      <option value="FRAT1">FRAT1</option>
+      <option value="RNU6_269P">RNU6_269P</option>
+      <option value="FXN">FXN</option>
+    </select>
+    <input type="submit" value="GENE">
+  </form>
+
+  <form action="operation" method="get">
+    <hr> Write a sequence <input type="text" name="msg">
+    <br><br>
+    <br><br>
+    Select operation:
+    <input type="radio" name="op" value="info" > info
+    <input type="radio" name="op" value="comp"> comp
+    <input type="radio" name="op" value="rev"> rev
+    <br><br>
+    Perform operation: <input type="submit" value="OPERATE!">
+    <hr>
+ </form>
+</body>
+</html>
