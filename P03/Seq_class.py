@@ -105,7 +105,7 @@ class Seq:
 
 
     def most_freq(self):
-        freq = self.countB()
+        freq = self.count()
         most_dict = {}
         most = 0
         for f in freq:
