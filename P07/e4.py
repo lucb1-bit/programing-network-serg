@@ -1,5 +1,6 @@
 import http.client
 import json
+import termcolor
 class Seq:
     def __init__(self, bases=None):
         if bases == None:
@@ -82,8 +83,8 @@ try:
         data = json.loads(response.read().decode("utf-8"))
         # we subtract the Id from the json response
         gene_id = data['id']
-        print(f"Gene: {name}. Id: {gene_id}")
-
+        termcolor.cprint("Gene: ", 'green')
+        print(name)
         try:
             endpoint_1 = f"/sequence/id/{gene_id}?content-type=application/json"
             conn.request("GET", endpoint_1)
@@ -95,12 +96,14 @@ try:
                 s = Seq()
                 s1= Seq(fasta)
                 # The description is in desc
-
-                print(f"Description: {data['desc']}")
+                termcolor.cprint("Description:", 'green')
+                print(f"{data['desc']}")
                 # the sequence is in seq
-                print(f"Total lengh: {s1.len()}")
+                termcolor.cprint("Total lengh:", 'green')
+                print(f"{s1.len()}")
                 print(f"{s1.percentage(s1.count())}")
-                print(f"Most frequent base:{s1.most_freq()}")
+                termcolor.cprint("Most frequent base:", 'green')
+                print(f"{s1.most_freq()}")
             else:
                 print(f"Error: The gen cant be found (Status: {response.status})")
         except ConnectionRefusedError:
