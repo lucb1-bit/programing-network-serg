@@ -1,5 +1,6 @@
 import http.client
 import json
+import termcolor
 class Seq:
     def __init__(self, bases=None):
         if bases == None:
@@ -84,7 +85,8 @@ for name in gene_names:
             data = json.loads(response.read().decode("utf-8"))
             # we subtract the Id from the json response
             gene_id = data['id']
-            print(f"Gene: {name}. Id: {gene_id}")
+            termcolor.cprint("Gene: ", 'green')
+            print(name)
 
             try:
                 endpoint_1 = f"/sequence/id/{gene_id}?content-type=application/json"
