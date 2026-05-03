@@ -26,7 +26,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         if path == "/":
             contents = Path('html/index.html').read_text()
 
-        elif path == "/limit":
+        elif path == "/listSpecies":
             conn = http.client.HTTPSConnection(SERVER)
             msg_0 = arguments.get('msg_0', ['0'])[0]
             endpoint = "/info/species?content-type=application/json"
@@ -45,11 +45,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             except ConnectionRefusedError:
                 print("ERROR! Cannot connect to the Server")
                 exit()
-        elif path == "/species":
+        elif path == "/karyotype":
             msg_1 = arguments.get('n', ['0'])[0]
             contents = read_html_file("limit.html").render(context={"todisplay": msg_1}, context_1={"number": n})
 
-        elif path == "/chromo" :
+        elif path == "/chromosomeLength" :
             msg_2 = arguments.get('gene', ['0'])[0]
             msg_3 = arguments.get('msg', ['0'])[0]
             genes = ["U5", "ADA", "FRAT1", "FXN", "RNU6_269P"]
