@@ -1,66 +1,7 @@
 import http.client
 import json
 import termcolor
-class Seq:
-    def __init__(self, bases=None):
-        if bases == None:
-            self.bases = "NULL"
-        else:
-            isvalid = self.is_valid(bases)
-            if isvalid == True:
-                self.bases = bases
-            elif isvalid == False:
-                self.bases = "Invalid Sequence"
-
-    def __str__(self):
-        return self.bases
-
-    def len(self):
-        if (self.bases == "NULL") or (self.bases == "Invalid Sequence"):
-            return 0
-        else:
-            return len(self.bases)
-
-    def is_valid(self, bases):
-        valid_bases = {'A', 'C', 'G', 'T'}
-        for b in bases:
-            if b not in valid_bases:
-                return False
-        return True
-
-    def count(self):
-        bases_dict = {'A':0, 'C':0, 'T':0, 'G':0}
-        if self.bases == "NULL" or self.bases == "Invalid Sequence":
-            bases_dict = {'A':0, 'C':0, 'T':0, 'G':0}
-        else:
-            for b in self.bases:
-                if b in bases_dict:
-                    bases_dict[b] += 1
-        return bases_dict
-
-    def percentage(self,n_bases):
-        total = self.len()
-        for b in n_bases:
-            n_bases [b] = f"""{n_bases [b]}  ({round((n_bases [b] / total * 100),2)}%) """
-
-        res = ""
-        for item, value in n_bases.items():
-            res += f"{item}: {value}\n "
-        return res
-
-    def most_freq(self):
-        freq = self.count()
-        most_dict = {}
-        most = 0
-        for f in freq:
-            if freq[f] > most:
-                most = freq[f]
-                bs = f
-                most_dict = {bs: most}
-            elif freq[f] == most:
-                most_dict[f] = most
-        return most_dict
-
+from Seq_class import Seq
 
 # server and gen data
 SERVER = 'rest.ensembl.org'
@@ -77,7 +18,7 @@ for name in gene_names:
     try:
         # we send the request GET
         conn.request("GET", endpoint)
-        # we  received the response
+        # we received the response
         response = conn.getresponse()
         print(f"Response received!: {response.status} {response.reason}\n")
 

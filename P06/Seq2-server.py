@@ -115,14 +115,14 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             n = arguments.get('n', ['0'])[0]
             sequences = ["AAAA", "GGGG", "CCCC", "TTTT","AGTC"]
             seq = sequences[int(n)]
-            contents = read_html_file("get.html").render(context={"todisplay": seq}, context_1={"number": n})
+            contents = read_html_file("limit.html").render(context={"todisplay": seq}, context_1={"number": n})
 
         elif path == "/gene":
             gene = arguments.get('gene', ['0'])[0]
             genes = ["U5", "ADA", "FRAT1", "FXN", "RNU6_269P"]
             if gene in genes:
                 gene_read= s.seq_read_fasta("SEQUENCES/"+gene+".txt")
-                contents = read_html_file("gene.html").render(context={"todisplay": gene_read}, context_1={"gene": gene})
+                contents = read_html_file("limit.html").render(context={"todisplay": gene_read}, context_1={"gene": gene})
             else:
                 contents = Path('html/error.html').read_text()
 
