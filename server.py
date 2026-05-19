@@ -25,7 +25,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         arguments = parse_qs(url_path.query)
 
         if path == "/":
-            contents = Path('html/index.html').read_text()
+            contents = Path('Final-Project/html/index.html').read_text()
 
         elif path == "/listSpecies":
             conn = http.client.HTTPSConnection(SERVER)
@@ -60,11 +60,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     data = json.loads(response.read().decode("utf-8"))
                     data_list = data["karyotype"]
                     if species == None:
-                        contents = Path("html/error.html").read_text()
+                        contents = Path("Final-Project/html/error.html").read_text()
                     else:
                         contents = read_html_file("karyotype.html").render(name={"name": data_list})
                 else:
-                    contents = Path("html/error.html").read_text()
+                    contents = Path("Final-Project/html/error.html").read_text()
             except ConnectionRefusedError:
                 print("ERROR! Cannot connect to the Server")
                 exit()
@@ -83,19 +83,19 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     data = json.loads(response.read().decode("utf-8"))
                     data_list = data["top_level_region"]
                     if species == None or chromo == None:
-                        contents = Path("html/error.html").read_text()
+                        contents = Path("Final-Project/html/error.html").read_text()
                     else:
                         for gen in data_list:
                             if gen["name"] == chromo:
                                 length = int(gen["length"])
                                 contents = read_html_file("length.html").render(number={"number": length})
                 else:
-                    contents = Path("html/error.html").read_text()
+                    contents = Path("Final-Project/html/error.html").read_text()
             except ConnectionRefusedError:
                 print("ERROR! Cannot connect to the Server")
                 exit()
         else:
-            contents = Path('html/error.html').read_text()
+            contents = Path('Final-Project/html/error.html').read_text()
 
         self.send_response(200)
         self.send_header('Content-Type', 'text/html')

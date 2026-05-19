@@ -58,11 +58,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 if species == None:
                     contents = Path("html/error.html").read_text()
                 else:
-                    #contents = read_html_file("karyotype.html").render(name={"name": data_list})
-                    json1 = json.loads(data_list)
-                    karyotype = json1["karyotype"]
-                    for chromo in enumerate(karyotype):
-                        print(chromo)
+                    contents = read_html_file("karyotype.html").render(name={"name": data_list})
             else:
                 contents = Path("html/error.html").read_text()
 
@@ -85,8 +81,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         elif path in ["/geneLookup", "/geneSeq", "/geneInfo", "/geneCalc"]:
             gene = arguments.get('gene', [None])[0]
             data = ensembl("/lookup/symbol/homo_sapiens/"+str(gene))
-
-            if gene == None:
+            if gene == None or data == None:
                 contents = Path("html/error.html").read_text()
             else:
                 if path == "/geneLookup":
@@ -111,6 +106,29 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     total_bases= seq.count()
                     percentage_bases = seq.percentage(total_bases)
                     contents = read_html_file("geneCalc.html").render(len={"len":total_len}, percent={"percent": percentage_bases},name={"name": gene})
+        elif path == "/geneList":
+            chromo = arguments.get("chromo", [None])[0]
+            start = arguments.get("start", [None])[0]
+            end = arguments.get("end", [None])[0]
+            if chromo and start and end:
+                try:
+                    conn = http.client.HTTPSConnection('rest.ensembl.org')
+                    conn.request("GET", f"/overlap/region/human/{chromo}:{start}-{end}?content-type=application/json&feature=gene&feature=transcript&feature=cds&feature=exon")
+                    response = conn.getresponse()
+                    genes_found = []
+                    if response.status == 200:
+                        data= json.loads(response.read().decode("utf-8"))
+                        if data is not None:
+                            for gen_dict in data:
+                                for item,value in gen_dict.items():
+                                    if item == "external_name":
+                                        if value not in genes_found:
+                                            genes_found.append(value)
+                            contents = read_html_file("geneList.html").render(name={"name": genes_found},chromo={"chromo":chromo},start={"start":start},end={"end": end})
+                        else:
+                            contents = Path('html/error.html').read_text()
+                except Exception:
+                    contents = Path('html/error.html').read_text()
         else:
             contents = Path('html/error.html').read_text()
 

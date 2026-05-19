@@ -4,16 +4,12 @@ import termcolor
 from Seq_class import Seq
 
 # server and gen data
-SERVER = 'rest.ensembl.org'
-gene_names = ["FRAT1", "ADA", "FXN", "RNU6-269P", "MIR633",
-              "TTTY4C", "RBMY2YP", "FGFR3", "KDR", "ANK2"]
-# Endpoint for sequence by ID
-for name in gene_names:
-    endpoint= f"/lookup/symbol/homo_sapiens/{name}?content-type=application/json"
+SERVER = "localhost:8080"
+endpoint= f"/lookup/symbol/homo_sapiens/{name}?content-type=application/json"
 
     # Establish the connection
-    conn = http.client.HTTPSConnection(SERVER)
-    print(f"Connecting to server: {SERVER}")
+conn = http.client.HTTPSConnection(SERVER)
+print(f"Connecting to server: {SERVER}")
 
     try:
         # we send the request GET

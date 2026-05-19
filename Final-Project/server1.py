@@ -111,12 +111,24 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             start = arguments.get("start", [None])[0]
             end = arguments.get("end", [None])[0]
             if chromo and start and end:
-                data = ensembl(f"/overlap/region/human/{chromo}:{start}-{end}?feature=gene")
-                if data is not None:
-                    genes_found = [g.get("external_name") for g in data if "external_name" in g]
-                    raw_data = {"chromosome": chromo, "start": start, "end": end, "genes": genes_found}
-                    contents = read_html_file("karyotype.html").render(
-                        name={"name": [f"Genes en {chromo}:{start}-{end}"] + genes_found})
+                try:
+                    conn = http.client.HTTPSConnection('rest.ensembl.org')
+                    conn.request("GET", f"/overlap/region/human/{chromo}:{start}-{end}?content-type=application/json&feature=gene&feature=transcript&feature=cds&feature=exon")
+                    response = conn.getresponse()
+                    genes_found = []
+                    if response.status == 200:
+                        data= json.loads(response.read().decode("utf-8"))
+                        if data is not None:
+                            for gen_dict in data:
+                                for item,value in gen_dict.items():
+                                    if item == "external_name":
+                                        if value not in genes_found:
+                                            genes_found.append(value)
+                            contents = read_html_file("geneList.html").render(name={"name": genes_found},chromo={"chromo":chromo},start={"start":start},end={"end": end})
+                        else:
+                            contents = Path('html/error.html').read_text()
+                except Exception:
+                    contents = Path('html/error.html').read_text()
         else:
             contents = Path('html/error.html').read_text()
 
