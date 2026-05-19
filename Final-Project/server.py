@@ -23,13 +23,34 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         url_path = urlparse(self.path)
         path = url_path.path
         arguments = parse_qs(url_path.query)
+
         if path == "/":
             contents = Path('html/index.html').read_text()
 
         elif path == "/listSpecies":
             conn = http.client.HTTPSConnection(SERVER)
-            msg_0 = arguments.get('msg_0', ['0'])[0]
+            limit = arguments.get('limit', [None])[0]
             endpoint = "/info/species?content-type=application/json"
+            try:
+                conn.request("GET", endpoint)
+                response = conn.getresponse()
+                if response.status == 200:
+                    data = json.loads(response.read().decode("utf-8"))
+                    data_list = data["species"]
+                    name_list = []
+                    if limit == None:
+                        limit = len(data_list)
+                    for specie in data_list[0:int(limit)]:
+                        name_list.append(specie["common_name"])
+                    contents = read_html_file("limit.html").render(name={"name": name_list},limit={"limit": int(limit)},total={"total": len(data_list)})
+            except ConnectionRefusedError:
+                print("ERROR! Cannot connect to the Server")
+                exit()
+
+        elif path == "/karyotype":
+            conn = http.client.HTTPSConnection(SERVER)
+            species = arguments.get( "species", [None])[0]
+            endpoint = "/info/assembly/"+(str(species).replace(" ", "%20"))+"?content-type=application/json"
             try:
                 # we send the request GET
                 conn.request("GET", endpoint)
@@ -37,38 +58,42 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 response = conn.getresponse()
                 if response.status == 200:
                     data = json.loads(response.read().decode("utf-8"))
-                    data_list = data["species"]
-                    name_list = []
-                    for specie in data_list[0:int(msg_0)]:
-                        name_list.append(specie["common_name"])
-                    contents = read_html_file("limit.html").render(name={"name": name_list},limit={"limit": int(msg_0)},total={"total": len(data_list)})
+                    data_list = data["karyotype"]
+                    if species == None:
+                        contents = Path("html/error.html").read_text()
+                    else:
+                        contents = read_html_file("karyotype.html").render(name={"name": data_list})
+                else:
+                    contents = Path("html/error.html").read_text()
             except ConnectionRefusedError:
                 print("ERROR! Cannot connect to the Server")
                 exit()
-        elif path == "/karyotype":
-            msg_1 = arguments.get('n', ['0'])[0]
-            contents = read_html_file("limit.html").render(context={"todisplay": msg_1}, context_1={"number": n})
 
         elif path == "/chromosomeLength" :
-            msg_2 = arguments.get('gene', ['0'])[0]
-            msg_3 = arguments.get('msg', ['0'])[0]
-            genes = ["U5", "ADA", "FRAT1", "FXN", "RNU6_269P"]
-            if gene in genes:
-                gene_read= s.seq_read_fasta("SEQUENCES/"+gene+".txt")
-                contents = read_html_file("limit.html").render(context={"todisplay": gene_read}, context_1={"gene": gene})
-
-        elif path == "/operation":
-            msg_2= arguments.get("op", [""])[0]
-            msg_3 = arguments.get('msg', ['0'])[0]
-            s1=Seq(msg)
-            if op == "comp":
-                res = s1.seq_complement()
-            elif op == "info":
-                n_bases = s1.count()
-                res = s1.percentage(n_bases)
-            elif op == "rev":
-                res = s1.reverse()
-            contents = read_html_file("operation.html").render(context={"op": op}, context_1={"result": res },context_2={"msg": msg })
+            conn = http.client.HTTPSConnection(SERVER)
+            species = arguments.get("species", [None])[0]
+            chromo = arguments.get("chromo", [None])[0]
+            endpoint = "/info/assembly/" + (str(species).replace(" ", "%20")) + "?content-type=application/json"
+            try:
+                # we send the request GET
+                conn.request("GET", endpoint)
+                # we received the response
+                response = conn.getresponse()
+                if response.status == 200:
+                    data = json.loads(response.read().decode("utf-8"))
+                    data_list = data["top_level_region"]
+                    if species == None or chromo == None:
+                        contents = Path("html/error.html").read_text()
+                    else:
+                        for gen in data_list:
+                            if gen["name"] == chromo:
+                                length = int(gen["length"])
+                                contents = read_html_file("length.html").render(number={"number": length})
+                else:
+                    contents = Path("html/error.html").read_text()
+            except ConnectionRefusedError:
+                print("ERROR! Cannot connect to the Server")
+                exit()
         else:
             contents = Path('html/error.html').read_text()
 
