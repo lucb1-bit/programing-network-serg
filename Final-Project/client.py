@@ -1,57 +1,40 @@
 import http.client
 import json
-import termcolor
-from Seq_class import Seq
 
-# server and gen data
-SERVER = "localhost:8080"
-endpoint= f"/lookup/symbol/homo_sapiens/{name}?content-type=application/json"
+SERVER_LOCAL = "localhost:8080"
 
-    # Establish the connection
-conn = http.client.HTTPSConnection(SERVER)
-print(f"Connecting to server: {SERVER}")
 
+def request_json(endpoint):
+    print(f"Requesting data from: http://{SERVER_LOCAL}{endpoint}")
     try:
-        # we send the request GET
+        conn = http.client.HTTPConnection(SERVER_LOCAL)
         conn.request("GET", endpoint)
-        # we received the response
         response = conn.getresponse()
-        print(f"Response received!: {response.status} {response.reason}\n")
 
+        print(f"SERVER RESPONSE Status: {response.status} {response.reason}")
         if response.status == 200:
-            data = json.loads(response.read().decode("utf-8"))
-            # we subtract the Id from the json response
-            gene_id = data['id']
-            termcolor.cprint("Gene: ", 'green')
-            print(name)
-
-            try:
-                endpoint_1 = f"/sequence/id/{gene_id}?content-type=application/json"
-                conn.request("GET", endpoint_1)
-                response = conn.getresponse()
-                if response.status == 200:
-                    # Convert JSON into a dictionary
-                    data = json.loads(response.read().decode("utf-8"))
-                    fasta=data['seq']
-                    s = Seq()
-                    s1= Seq(fasta)
-                    # The description is in desc
-                    termcolor.cprint("Description:", 'green')
-                    print(f"{data['desc']}")
-                    # the sequence is in seq
-                    termcolor.cprint("Total lengh:", 'green')
-                    print(f"{s1.len()}")
-                    print(f"{s1.percentage(s1.count())}")
-                    termcolor.cprint("Most frequent base:", 'green')
-                    print(f"{s1.most_freq()}")
-                else:
-                    print(f"Error: The gen cant be found (Status: {response.status})")
-            except ConnectionRefusedError:
-                print("ERROR! Cannot connect to the Server")
-                exit()
+            #json data interpreted
+            data_dict = json.loads(response.read().decode("utf-8"))
+            print("JSON DATA RECEIVED:")
+            print(json.dumps(data_dict))
         else:
-            print(f"Error finding {name}: {response.status}")
+            print(f"SERVER ERROR Error description: {response.read().decode('utf-8')}")
     except ConnectionRefusedError:
         print("ERROR! Cannot connect to the Server")
         exit()
 
+
+# Test List Species
+request_json("/listSpecies?limit=3&json=1")
+
+# Test karyotype
+request_json("/karyotype?species=shrew+mouse&json=1")
+
+#Test Gene Lookup
+request_json("/geneLookup?gene=ADA&json=1")
+
+#Test Gene Info
+request_json("/geneInfo?gene=FRAT1&json=1")
+
+#Test Gene Overlap
+request_json("/geneList?chromo=9&start=22125500&end=22136000&json=1")

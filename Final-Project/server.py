@@ -35,6 +35,15 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         path = url_path.path
         arguments = parse_qs(url_path.query)
 
+        contents = ""
+        raw_data = None
+
+        json_data = arguments.get('json', [None])[0]
+        if json_data == '1':
+            is_json = True
+        else:
+            is_json = False
+
         if path == "/":
             contents = Path('html/index.html').read_text()
 
@@ -49,6 +58,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 for specie in data_list[0:int(limit)]:
                     name_list.append(specie["common_name"])
                 contents = read_html_file("limit.html").render(name={"name": name_list},limit={"limit": int(limit)},total={"total": len(data_list)})
+                raw_data = {"species": name_list, "limit": int(limit), "total": len(data_list)}
 
         elif path == "/karyotype":
             species = arguments.get( "species", [None])[0]
@@ -59,6 +69,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     contents = Path("html/error.html").read_text()
                 else:
                     contents = read_html_file("karyotype.html").render(name={"name": data_list})
+                    raw_data = {"species": species, "karyotype": data_list}
             else:
                 contents = Path("html/error.html").read_text()
 
@@ -75,6 +86,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         if gen["name"] == chromo:
                             length = int(gen["length"])
                             contents = read_html_file("length.html").render(number={"number": length})
+                            raw_data = {"species": species, "chromosome": chromo, "length": length}
             else:
                 contents = Path("html/error.html").read_text()
 
@@ -87,10 +99,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 if path == "/geneLookup":
                     gene_id = data['id']
                     contents = read_html_file("geneLookup.html").render(ident={"ident": gene_id},name={"name": gene})
+                    raw_data = {"gene": gene, "id": gene_id}
                 elif path == "/geneSeq":
                     description = ensembl(f"/sequence/id/{data['id']}")
                     seq = description["seq"]
                     contents = read_html_file("geneSeq.html").render(seq={"seq":seq}, name={"name": gene})
+                    raw_data = {"gene": gene,"seq": seq}
                 elif path == "/geneInfo":
                     start = data["start"]
                     end = data["end"]
@@ -99,6 +113,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     reg = data["seq_region_name"]
                     length = int(end)-int(start)+1
                     contents = read_html_file("geneInfo.html").render(start={"start":start}, name={"name": name}, end={"end": end}, len={"len": length},id={"id": ident},reg={"reg": reg})
+                    raw_data = {"gene": name, "id": ident, "chromosome": reg, "start": start, "end": end,"length": length}
                 elif path == "/geneCalc":
                     description = ensembl(f"/sequence/id/{data['id']}")
                     seq = Seq(description["seq"])
@@ -106,10 +121,13 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     total_bases= seq.count()
                     percentage_bases = seq.percentage(total_bases)
                     contents = read_html_file("geneCalc.html").render(len={"len":total_len}, percent={"percent": percentage_bases},name={"name": gene})
+                    raw_data = {"gene": gene, "length": total_len, "percentages": percentage_bases}
+
         elif path == "/geneList":
             chromo = arguments.get("chromo", [None])[0]
             start = arguments.get("start", [None])[0]
             end = arguments.get("end", [None])[0]
+
             if chromo and start and end:
                 try:
                     conn = http.client.HTTPSConnection('rest.ensembl.org')
@@ -125,18 +143,26 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                                         if value not in genes_found:
                                             genes_found.append(value)
                             contents = read_html_file("geneList.html").render(name={"name": genes_found},chromo={"chromo":chromo},start={"start":start},end={"end": end})
-                        else:
-                            contents = Path('html/error.html').read_text()
+                            raw_data = {"chromosome": chromo, "start": start, "end": end, "genes": genes_found}
                 except Exception:
                     contents = Path('html/error.html').read_text()
         else:
             contents = Path('html/error.html').read_text()
 
         self.send_response(200)
-        self.send_header('Content-Type', 'text/html')
-        self.send_header('Content-Length', str(len(str.encode(contents))))
+        if is_json and raw_data is not None:
+            self.send_header('Content-Type', 'application/json')
+            contents = json.dumps(raw_data)
+            response_bytes = contents.encode('utf-8')
+        else:
+            self.send_header('Content-Type', 'text/html')
+            if not contents:
+                contents = Path('html/error.html').read_text()
+            response_bytes = contents.encode('utf-8')
+
+        self.send_header('Content-Length', str(len(response_bytes)))
         self.end_headers()
-        self.wfile.write(str.encode(contents))
+        self.wfile.write(response_bytes)
         return
 
 #PROGRAM

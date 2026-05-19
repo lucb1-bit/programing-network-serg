@@ -36,7 +36,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         arguments = parse_qs(url_path.query)
 
         if path == "/":
-            contents = Path('html/index.html').read_text()
+            contents = Path('Final-Project/html/index.html').read_text()
 
         elif path == "/listSpecies":
             limit = arguments.get('limit', [None])[0]
@@ -56,11 +56,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             if data:
                 data_list = data["karyotype"]
                 if species == None:
-                    contents = Path("html/error.html").read_text()
+                    contents = Path("Final-Project/html/error.html").read_text()
                 else:
                     contents = read_html_file("karyotype.html").render(name={"name": data_list})
             else:
-                contents = Path("html/error.html").read_text()
+                contents = Path("Final-Project/html/error.html").read_text()
 
         elif path == "/chromosomeLength" :
             species = arguments.get("species", [None])[0]
@@ -69,20 +69,20 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             if data:
                 data_list = data["top_level_region"]
                 if species == None or chromo == None:
-                    contents = Path("html/error.html").read_text()
+                    contents = Path("Final-Project/html/error.html").read_text()
                 else:
                     for gen in data_list:
                         if gen["name"] == chromo:
                             length = int(gen["length"])
                             contents = read_html_file("length.html").render(number={"number": length})
             else:
-                contents = Path("html/error.html").read_text()
+                contents = Path("Final-Project/html/error.html").read_text()
 
         elif path in ["/geneLookup", "/geneSeq", "/geneInfo", "/geneCalc"]:
             gene = arguments.get('gene', [None])[0]
             data = ensembl("/lookup/symbol/homo_sapiens/"+str(gene))
             if gene == None or data == None:
-                contents = Path("html/error.html").read_text()
+                contents = Path("Final-Project/html/error.html").read_text()
             else:
                 if path == "/geneLookup":
                     gene_id = data['id']
@@ -126,11 +126,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                                             genes_found.append(value)
                             contents = read_html_file("geneList.html").render(name={"name": genes_found},chromo={"chromo":chromo},start={"start":start},end={"end": end})
                         else:
-                            contents = Path('html/error.html').read_text()
+                            contents = Path('Final-Project/html/error.html').read_text()
                 except Exception:
-                    contents = Path('html/error.html').read_text()
+                    contents = Path('Final-Project/html/error.html').read_text()
         else:
-            contents = Path('html/error.html').read_text()
+            contents = Path('Final-Project/html/error.html').read_text()
 
         self.send_response(200)
         self.send_header('Content-Type', 'text/html')
