@@ -20,7 +20,7 @@ def process_client(s):
     base_list = ["/info/A", "/info/C"]
 
     if r[1] in base_list:
-        name = "html" + r[1] + ".html"
+        name = "html" + r[1] + "exam.html"
         with open(name, "r") as f:
             body = f.read()
     else:

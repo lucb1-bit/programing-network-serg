@@ -149,37 +149,67 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             else:
                 contents = Path('html/error.html').read_text()
 
-        elif path == "/compare_genes":
-            g1 = arguments.get("g1", [None])[0]
-            g2 = arguments.get("g2", [None])[0]
-            if g1 and g2:
-                try:
-                    conn = http.client.HTTPSConnection('rest.ensembl.org')
-                    conn.request("GET", f"/lookup/id/{g1}?expand=1&content-type=application/json")
-                    response = conn.getresponse()
-                    if response.status == 200:
-                        data1= json.loads(response.read().decode("utf-8"))
-                except Exception:
-                    contents = Path('html/error1.html').read_text()
-                try:
-                    conn = http.client.HTTPSConnection('rest.ensembl.org')
-                    conn.request("GET", f"/lookup/id/{g2}?expand=1&content-type=application/json")
-                    response = conn.getresponse()
-                    if response.status == 200:
-                        data2= json.loads(response.read().decode("utf-8"))
-                        if data1 and data2 is not None:
-                            name1 = data1["display_name"]
-                            name2 = data2["display_name"]
-                            contents = read_html_file("exam1.html").render(name1={"name1": name1},
-                                                                          name2={"name2": name2}, g1={"g1": g1},
-                                                                          g2={"g2": g2})
-                        else:
-                            contents = Path('html/error1.html').read_text()
 
-                except Exception:
+        elif path == "/compare_genes":
+
+            g1 = arguments.get("g1", [None])[0]
+
+            g2 = arguments.get("g2", [None])[0]
+
+            # Ponemos el error por defecto por si algo falla en el camino
+
+            contents = Path('html/error1.html').read_text()
+
+            if g1 and g2:
+
+                try:
+
+                    conn = http.client.HTTPSConnection('rest.ensembl.org')
+
+                    # CORRECCIÓN 1: Cambiado el segundo '?' por '&'
+
+                    conn.request("GET", f"/lookup/id/{g1}?expand=1&content-type=application/json")
+
+                    response1 = conn.getresponse()
+
+                    # Hacemos la segunda petición en el mismo sitio
+
+                    conn.request("GET", f"/lookup/id/{g2}?expand=1&content-type=application/json")
+
+                    response2 = conn.getresponse()
+
+                    # CORRECCIÓN 2: Comprobamos que AMBOS servidores respondieron bien (200)
+
+                    if response1.status == 200 and response2.status == 200:
+
+                        data1 = json.loads(response1.read().decode("utf-8"))
+
+                        data2 = json.loads(response2.read().decode("utf-8"))
+
+                        # Ahora es 100% seguro que data1 y data2 existen en memoria
+
+                        if data1 is not None and data2 is not None:
+                            name1 = data1.get("display_name", g1)
+
+                            name2 = data2.get("display_name", g2)
+
+                            contents = read_html_file("exam1.html").render(name1={"name1": name1},name2={"name2": name2},g1={"g1": g1},g2={"g2": g2})
+
+                            raw_data = {"gene1": name1, "gene2": name2, "id1": g1, "id2": g2}
+
+                    else:
+
+                        contents = Path('html/error1.html').read_text()
+
+
+                except Exception as e:
+
+                    print(f"Error en /compare_genes: {e}")
+
                     contents = Path('html/error1.html').read_text()
 
             else:
+
                 contents = Path('html/error1.html').read_text()
 
         else:

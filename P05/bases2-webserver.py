@@ -26,7 +26,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         r = req_line.split(" ")
         base_list = ["/info/A", "/info/C", "/info/G", "/info/T"]
         if r[1] in base_list:
-            name = "html" + r[1] + ".html"
+            name = "html" + r[1] + "exam.html"
             with open(name, "r") as f:
                 body = f.read()
         elif r[1] == "/":
