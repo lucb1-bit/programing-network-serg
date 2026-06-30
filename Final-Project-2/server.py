@@ -170,7 +170,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         if data1 and data2 is not None:
                             name1 = data1["display_name"]
                             name2 = data2["display_name"]
-                            contents = read_html_file("exam1.html").render(name1={"name1": name1},
+                            contents = read_html_file("exam.html").render(name1={"name1": name1},
                                                                           name2={"name2": name2}, g1={"g1": g1},
                                                                           g2={"g2": g2})
                         else:
@@ -182,9 +182,44 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             else:
                 contents = Path('html/error1.html').read_text()
 
+        elif path == "/phenotype" :
+            gene_id = arguments.get("gene_id", [None])[0]
+            source = arguments.get("source", [None])[0]
+            if not gene_id:
+                error = "The gen Id is obligatory you must insert one"
+                contents = read_html_file("error2.html").render(error={"error": error})
+            elif gene_id:
+                data = ensembl(f"/phenotype/gene/homo_sapiens/{gene_id}")
+                if not data:
+                    error = "The gen Id you insert is not valid ERROR 400"
+                    contents = read_html_file("error2.html").render(error={"error": error})
+                else:
+                    no_source = ""
+                    phe_list =[]
+                    source_list = []
+                    for i in data:
+                        if i["description"] not in phe_list:
+                            phe_list.append(i["description"])
+                    for i in data:
+                        if i["source"] not in source_list:
+                            source_list.append(i["source"])
+
+                    if source not in source_list:
+                        source = "FAKESOURCE"
+                        phe_list = "no source for list phenotype"
+                        no_source = "LIST OF SOURCES"
+                        tp = len(phe_list)
+                    else:
+                        source_list = ""
+                        tp = len(phe_list)
+                        phe_list = []
+                        for i in data:
+                            if i["source"] == source and i["description"] not in phe_list:
+                                phe_list.append(i["description"])
+                    contents = read_html_file("exam1.html").render(gene_id={"gene_id": gene_id},phe_list={"phe_list":phe_list},tp={"tp":tp},source={"source":source},no_source={"no_source":no_source},source_list={"source_list":source_list})
+
         else:
             contents = Path('html/error.html').read_text()
-
 
 
         self.send_response(200)
